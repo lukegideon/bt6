@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BT6(0) Live Record</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+  /* Layout: a single factsheet column, figures first, then charts, then the record and the method. */
+  :root {
+    --bg: #fbfcfd; --panel: #ffffff; --fg: #14202b; --muted: #5b6875; --line: #dfe4ea; --grid: #edf0f3;
+    --accent: #1f5f7f; --accent-soft: rgba(31, 95, 127, .14); --hold: #9aa6b2;
+    --good: #1c7a4c; --bad: #b2362b;
+    --sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --mono: var(--sans);   /* figures use the same face with tabular digits */
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0f1419; --panel: #151c23; --fg: #e4e9ee; --muted: #93a1ae; --line: #26313b; --grid: #1c252e;
+    --accent: #6fb3d6; --accent-soft: rgba(111, 179, 214, .16); --hold: #6c7a87; --good: #5cc28d; --bad: #ef7d70; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #0f1419; --panel: #151c23; --fg: #e4e9ee; --muted: #93a1ae; --line: #26313b; --grid: #1c252e;
+    --accent: #6fb3d6; --accent-soft: rgba(111, 179, 214, .16); --hold: #6c7a87; --good: #5cc28d; --bad: #ef7d70; color-scheme: dark }
+
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55;
+         font-feature-settings: "tnum" 1, "cv11" 1; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 64rem; margin: 0 auto; padding-block: 40px 56px;
+          padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+          display: flex; flex-direction: column; gap: 40px; }
+  .num { font-variant-numeric: tabular-nums; }
+  h1, h2, h3 { text-wrap: balance; }
+
+  .head { display: flex; flex-direction: column; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 0; font-size: 13px; color: var(--muted); }
+  .meta span + span::before { content: "\00B7"; margin: 0 10px; color: var(--line); }
+  h1 { margin: 0; font-size: clamp(28px, 4.5vw, 36px); font-weight: 600; letter-spacing: -.022em; line-height: 1.15; }
+  .lede { margin: 0; max-width: 64ch; font-size: 17px; color: var(--fg); }
+  .lede b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stamp { font-size: 13px; color: var(--muted); }
+
+  .figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+  .fig { padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .fig + .fig { border-left: 1px solid var(--line); }
+  .fig h2 { margin: 0; font-size: 13px; font-weight: 500; color: var(--muted); }
+  .big { font-size: 28px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .sub { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .good { color: var(--good); } .bad { color: var(--bad); } .flat { color: var(--fg); }
+  .state { display: inline-flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; }
+  .state i { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); display: inline-block; }
+  .state.is-in i { background: var(--good); }
+  @media (max-width: 720px) {
+    .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fig:nth-child(3) { border-left: 0; } .fig:nth-child(n+3) { border-top: 1px solid var(--line); }
+  }
+
+  .block { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .block > h2 { margin: 0; font-size: 18px; font-weight: 600; }
+  .note { margin: 0; max-width: 64ch; font-size: 13px; color: var(--muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .k { width: 18px; height: 0; border-top: 2px solid var(--accent); display: inline-block; }
+  .k.hold { border-top: 2px dashed var(--hold); }
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart text { font-family: var(--sans); font-size: 11.5px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  .tip { position: absolute; pointer-events: none; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line);
+         border-radius: 4px; box-shadow: 0 4px 14px rgba(0, 0, 0, .12); font-size: 12.5px;
+         font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tip .d { color: var(--muted); margin-bottom: 2px; font-family: var(--sans); }
+
+  .tablewrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 13px; font-weight: 500; color: var(--muted);
+       padding: 8px 16px 8px 0; border-bottom: 1px solid var(--fg); white-space: nowrap; }
+  td { padding: 11px 16px 11px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td.r, th.r { text-align: right; } td.r { font-variant-numeric: tabular-nums; }
+  .empty { margin: 0; padding: 18px 20px; border: 1px dashed var(--line); border-radius: 6px; color: var(--muted); max-width: 64ch; }
+
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 18px 32px; margin: 0; }
+  .rules div { min-width: 0; padding-top: 12px; border-top: 1px solid var(--line); }
+  .rules dt { font-weight: 600; margin-bottom: 4px; }
+  .rules dd { margin: 0; color: var(--muted); }
+
+  .foot { padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+  .foot p { margin: 0; max-width: 72ch; }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div class="meta"><span>Live account</span><span>Binance spot</span><span>BTC / USDT</span><span>No leverage</span></div>
+    <h1>BT6(0) Live Record</h1>
+    <p class="lede" id="lede">Loading the record…</p>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <section class="figs" aria-label="Headline figures">
+    <div class="fig"><h2>Account value</h2><div class="big" id="f-value">—</div><div class="sub" id="f-start">—</div></div>
+    <div class="fig"><h2>Return since launch</h2><div class="big" id="f-ret">—</div><div class="sub" id="f-btc">—</div></div>
+    <div class="fig"><h2>Position</h2><div class="state" id="f-pos"><i></i><span>—</span></div><div class="sub" id="f-share">—</div></div>
+    <div class="fig"><h2>Trades</h2><div class="big" id="f-trades">—</div><div class="sub" id="f-days">—</div></div>
+  </section>
+
+  <section class="block">
+    <h2>Return since launch, against holding Bitcoin</h2>
+    <div class="legend" aria-hidden="true"><span><i class="k"></i>BT6(0) strategy</span><span><i class="k hold"></i>Holding Bitcoin</span></div>
+    <div class="chart" id="c-value"></div>
+    <p class="note">One point per day, taken at the bot's morning run after the 00:00 UTC daily close. Only trading gains count: money added to or taken out of the account is left out, the way funds report returns.</p>
+  </section>
+
+  <section class="block">
+    <h2>Share of the account held in Bitcoin</h2>
+    <div class="chart" id="c-share"></div>
+    <p class="note">0% means fully in cash (USDT). The strategy never goes above 100%, so it never borrows.</p>
+  </section>
+
+  <section class="block">
+    <h2>Trade log</h2>
+    <p class="empty" id="no-trades" hidden>No trades yet: the strategy has stayed in cash since launch. Trades appear here automatically.</p>
+    <div class="tablewrap" id="trades-wrap" hidden>
+      <table><thead><tr><th>Date</th><th>Side</th><th>Coin</th><th class="r">Amount</th><th class="r">Price</th><th class="r">Value</th></tr></thead><tbody id="t-trades"></tbody></table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>About the strategy</h2>
+    <dl class="rules">
+      <div><dt>Private rules</dt><dd>The strategy's rules are private. It decides once a day and trades Bitcoin against USDT on Binance spot.</dd></div>
+      <div><dt>No borrowing</dt><dd>At most 100% of the account is in Bitcoin. No margin, no leverage.</dd></div>
+      <div><dt>Trade-only access</dt><dd>The bot's Binance key can place trades but cannot withdraw funds.</dd></div>
+      <div><dt>Rules fixed in advance</dt><dd>The rule was fingerprinted before testing and has not been tuned since.</dd></div>
+    </dl>
+  </section>
+
+  <section class="block">
+    <h2>Simulated history</h2>
+    <p class="note">How the same rule would have done on past prices, simulated with trading costs. These are not live results. Return is the total gain; worst drop is the largest fall from a high.</p>
+    <div class="tablewrap">
+      <table><thead><tr><th>Period</th><th>Strategy</th><th class="r">Strategy return</th><th class="r">Worst drop</th><th class="r">Holding the coin</th><th class="r">Worst drop</th></tr></thead><tbody id="t-hist"></tbody></table>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>The account trades a small amount of real money on Binance spot. Values are the bot's own budget: its Bitcoin plus its cash, priced at the Binance mid price at each daily run. Returns count trading gains only: deposits, withdrawals and budget changes are recorded as money put in or taken out, not as gains.</p>
+    <p>Simulated results show how the rule behaved on past prices and do not guarantee future returns. The strategy can lose money; in simulation its largest fall from a high was about 30%. This page is a record of results, not investment advice.</p>
+  </footer>
+</div>
+
+<script id="data" type="application/json">{"record":[{"date":"2026-11-18","value":"20.00","btc_value":"0.00","cash":"20.00","btc_price":"64194.79","target":"0.00","index":"1.000000","put_in":"20.00"},{"date":"2026-11-19","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"63607.96","target":"0.00","index":"1.000000","put_in":"24.11"},{"date":"2026-11-20","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"61864.01","target":"0.00","index":"1.000000","put_in":"24.11"}],"trades":[],"backtest":[{"period":"BTC 2018-2026 (Binance)","strategy":"BT6(0)-NB","strategy_total":"16.22","strategy_worst_drop":"-0.30","hold_total":"9.91","hold_worst_drop":"-0.77"},{"period":"BTC 2013-2017 (Bitstamp)","strategy":"BT6(0)-NB","strategy_total":"13.03","strategy_worst_drop":"-0.29","hold_total":"41.67","hold_worst_drop":"-0.85"},{"period":"ETH 2018-2026 (Binance)","strategy":"ET6(0)-NB","strategy_total":"10.62","strategy_worst_drop":"-0.35","hold_total":"4.35","hold_worst_drop":"-0.90"},{"period":"SOL 2021-2026 (Binance)","strategy":"SO6(0)-NB","strategy_total":"8.43","strategy_worst_drop":"-0.31","hold_total":"3.48","hold_worst_drop":"-0.97"}],"updated":"20 Nov 2026, 11:56 UTC"}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+(function () {
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const $ = (id) => document.getElementById(id);
+  const n = (v) => (v === '' || v == null ? NaN : +v);
+  const usd = (v) => (isFinite(v) ? '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—');
+  const pct = (v, d = 1) => (isFinite(v) ? (v > 0.00005 ? '+' : v < -0.00005 ? '−' : '') + (Math.abs(v) * 100).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }) + '%' : '—');
+  const day = (s) => new Date(s + 'T00:00:00Z');
+  const fmtDay = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  const tone = (el, v) => { el.classList.remove('good', 'bad', 'flat'); el.classList.add(v > 0.0005 ? 'good' : v < -0.0005 ? 'bad' : 'flat'); };
+
+  const rec = D.record.filter((r) => isFinite(n(r.value)) && isFinite(n(r.btc_price)));
+  const trades = D.trades;
+  $('stamp').textContent = 'Last updated ' + D.updated;
+  if (!rec.length) { $('lede').textContent = 'The record starts after the first daily run.'; return; }
+
+  const a = rec[0], z = rec[rec.length - 1];
+  const v0 = n(a.value), p0 = n(a.btc_price);
+  const gi = (r) => (isFinite(n(r.index)) ? n(r.index) : n(r.value) / v0);   // growth from trading alone
+  const series = rec.map((r) => ({ d: day(r.date), value: gi(r) - 1, hold: n(r.btc_price) / p0 - 1, share: n(r.value) > 0 ? n(r.btc_value) / n(r.value) : 0 }));
+  const putIn = isFinite(n(z.put_in)) ? n(z.put_in) : v0, flows = Math.abs(putIn - v0) >= 0.5;
+  const ret = gi(z) - 1, btc = n(z.btc_price) / p0 - 1, share = series[series.length - 1].share;
+  const inBtc = share > 0.005, days = Math.round((day(z.date) - day(a.date)) / 864e5) + 1;
+
+  $('lede').innerHTML = '';
+  const L = $('lede'), t = (s) => L.append(s), b = (s) => { const e = document.createElement('b'); e.textContent = s; L.append(e); };
+  t('Since trading began on '); b(fmtDay(day(a.date))); t(', the strategy has returned '); b(pct(ret));
+  t('. Over the same days Bitcoin moved '); b(pct(btc)); t('. The account now holds '); b(usd(n(z.value)));
+  if (flows) { t(', of which '); b(usd(putIn)); t(' is money put in'); } t('. The strategy is currently ');
+  b(inBtc ? 'holding Bitcoin' : 'in cash'); t('.');
+
+  $('f-value').textContent = usd(n(z.value)); $('f-start').textContent = flows ? 'Money put in: ' + usd(putIn) : 'Started at ' + usd(v0);
+  $('f-ret').textContent = pct(ret); tone($('f-ret'), ret); $('f-btc').textContent = 'Bitcoin, same days: ' + pct(btc);
+  $('f-pos').classList.toggle('is-in', inBtc); $('f-pos').querySelector('span').textContent = inBtc ? 'Holding Bitcoin' : 'In cash';
+  $('f-share').textContent = Math.round(share * 100) + '% of the account in Bitcoin';
+  $('f-trades').textContent = String(trades.length); $('f-days').textContent = days === 1 ? '1 day live' : days + ' days live';
+
+  $('no-trades').hidden = trades.length > 0; $('trades-wrap').hidden = trades.length === 0;
+  const row = (tb, cells, rightFrom) => { const tr = document.createElement('tr'); cells.forEach((c, i) => { const td = document.createElement('td'); td.textContent = c; if (i >= rightFrom) td.className = 'r'; tr.append(td); }); tb.append(tr); };
+  [...trades].reverse().forEach((r) => row($('t-trades'), [fmtDay(day(r.date)), r.side === 'buy' ? 'Buy' : r.side === 'sell' ? 'Sell' : r.side, r.coin, String(n(r.amount)), usd(n(r.price)), usd(n(r.usd))], 3));
+  D.backtest.forEach((r) => row($('t-hist'), [r.period, r.strategy, pct(n(r.strategy_total), 0), pct(n(r.strategy_worst_drop), 0), pct(n(r.hold_total), 0), pct(n(r.hold_worst_drop), 0)], 2));
+
+  if (!window.d3) return;
+  const css = (k) => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+  const xDomain = () => { const e = d3.extent(series, (s) => s.d); return +e[0] === +e[1] ? [d3.utcDay.offset(e[0], -3), d3.utcDay.offset(e[1], 3)] : e; };
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let played = false;
+
+  function grid(svg, y, x0, x1, ticks, fmt) {
+    const g = svg.append('g');
+    ticks.forEach((v) => {
+      g.append('line').attr('x1', x0).attr('x2', x1).attr('y1', y(v)).attr('y2', y(v)).attr('stroke', css('--grid'));
+      g.append('text').attr('x', x0 - 8).attr('y', y(v)).attr('dy', '0.32em').attr('text-anchor', 'end').text(fmt(v));
+    });
+  }
+  function xAxis(svg, x, y0, w) {
+    const nt = Math.max(2, Math.min(6, Math.floor(w / 95)));
+    x.ticks(nt).forEach((d) => svg.append('text').attr('x', x(d)).attr('y', y0 + 18).attr('text-anchor', 'middle').text(d3.utcFormat('%-d %b')(d)));
+    svg.append('line').attr('x1', x.range()[0]).attr('x2', x.range()[1]).attr('y1', y0).attr('y2', y0).attr('stroke', css('--line'));
+  }
+
+  function drawValue() {
+    const el = $('c-value'); el.replaceChildren();
+    const w = Math.max(300, el.clientWidth), h = w < 500 ? 220 : 280, m = { t: 10, r: 14, b: 28 };
+    const lo = Math.min(0, d3.min(series, (s) => Math.min(s.value, s.hold))), hi = Math.max(0, d3.max(series, (s) => Math.max(s.value, s.hold)));
+    const pad = Math.max((hi - lo) * 0.15, 0.02);
+    const y = d3.scaleLinear().domain([lo - pad, hi + pad]).nice(4);
+    const ticks = y.ticks(4), step = ticks.length > 1 ? ticks[1] - ticks[0] : 1;
+    const dp = Math.max(0, d3.precisionFixed(step * 100)), fmt = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v * 100).toFixed(dp) + '%';
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img')
+      .attr('aria-label', `Strategy return since launch ${pct(ret)}, compared with holding Bitcoin ${pct(btc)}.`);
+    const probe = svg.append('text').text(fmt(ticks[ticks.length - 1])); const ml = Math.ceil(probe.node().getComputedTextLength()) + 14; probe.remove();
+    const x = d3.scaleUtc().domain(xDomain()).range([ml, w - m.r]); y.range([h - m.b, m.t]);
+    grid(svg, y, ml, w - m.r, ticks, fmt); xAxis(svg, x, h - m.b, w - ml - m.r);
+    const line = (k) => d3.line().x((s) => x(s.d)).y((s) => y(s[k]));
+    svg.append('path').datum(series).attr('fill', 'none').attr('stroke', css('--hold')).attr('stroke-width', 1.5).attr('stroke-dasharray', '4 4').attr('d', line('hold'));
+    const main = svg.append('path').datum(series).attr('fill', 'none').attr('stroke', css('--accent')).attr('stroke-width', 2.25).attr('d', line('value'));
+    if (!reduce && !played && series.length > 1) { played = true; const len = main.node().getTotalLength();
+      main.attr('stroke-dasharray', `${len} ${len}`).attr('stroke-dashoffset', len).transition().duration(900).attr('stroke-dashoffset', 0); }
+    const e = series[series.length - 1];
+    svg.append('circle').attr('r', 3).attr('cx', x(e.d)).attr('cy', y(e.hold)).attr('fill', css('--hold'));
+    svg.append('circle').attr('r', 4).attr('cx', x(e.d)).attr('cy', y(e.value)).attr('fill', css('--accent'));
+    const tip = d3.select(el).append('div').attr('class', 'tip').attr('hidden', '');
+    const guide = svg.append('line').attr('y1', m.t).attr('y2', h - m.b).attr('stroke', css('--line')).attr('visibility', 'hidden');
+    svg.append('rect').attr('x', ml).attr('y', m.t).attr('width', w - ml - m.r).attr('height', h - m.t - m.b).attr('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [px] = d3.pointer(ev); const tt = x.invert(px);
+        const i = d3.leastIndex(series, (s) => Math.abs(s.d - tt)); const s = series[i]; const cx = x(s.d);
+        guide.attr('x1', cx).attr('x2', cx).attr('visibility', 'visible');
+        tip.attr('hidden', null).html('');
+        tip.append('div').attr('class', 'd').text(fmtDay(s.d)); tip.append('div').text('Strategy  ' + pct(s.value)); tip.append('div').text('Bitcoin  ' + pct(s.hold));
+        const sx = cx / w * el.clientWidth, tw = tip.node().offsetWidth;
+        tip.style('left', Math.max(0, Math.min(el.clientWidth - tw, sx + 12)) + 'px').style('top', '8px');
+      })
+      .on('pointerleave', () => { tip.attr('hidden', ''); guide.attr('visibility', 'hidden'); });
+  }
+
+  function drawShare() {
+    const el = $('c-share'); el.replaceChildren();
+    const w = Math.max(300, el.clientWidth), h = 120, m = { t: 8, r: 14, b: 28 }, ml = 46;
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img')
+      .attr('aria-label', `Share of the account held in Bitcoin over time; currently ${Math.round(share * 100)}%.`);
+    const x = d3.scaleUtc().domain(xDomain()).range([ml, w - m.r]), y = d3.scaleLinear().domain([0, 1]).range([h - m.b, m.t]);
+    grid(svg, y, ml, w - m.r, [0, 0.5, 1], (v) => Math.round(v * 100) + '%'); xAxis(svg, x, h - m.b, w - ml - m.r);
+    svg.append('path').datum(series).attr('fill', css('--accent-soft'))
+      .attr('d', d3.area().curve(d3.curveStepAfter).x((s) => x(s.d)).y0(y(0)).y1((s) => y(s.share)));
+    svg.append('path').datum(series).attr('fill', 'none').attr('stroke', css('--accent')).attr('stroke-width', 1.5)
+      .attr('d', d3.line().curve(d3.curveStepAfter).x((s) => x(s.d)).y((s) => y(s.share)));
+    const e = series[series.length - 1]; svg.append('circle').attr('r', 3.5).attr('cx', x(e.d)).attr('cy', y(e.share)).attr('fill', css('--accent'));
+  }
+
+  const draw = () => { drawValue(); drawShare(); };
+  draw();
+  let lw = window.innerWidth; window.addEventListener('resize', () => { if (window.innerWidth !== lw) { lw = window.innerWidth; draw(); } });
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>
+
+<div style="max-width:960px;margin:24px auto 40px;padding:0 16px;font:13px/1.5 Inter,Segoe UI,Arial,sans-serif;color:#5b6875"><a href="report.pdf" style="color:#1f5f7f">Download the full proof report (PDF)</a> &middot; Published automatically from the bot's own records on 20 Nov 2026, 11:56 UTC.</div>
+</html>
