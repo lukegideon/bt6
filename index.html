@@ -172,7 +172,7 @@
   </footer>
 </div>
 
-<script id="data" type="application/json">{"record":[{"date":"2026-11-18","value":"20.00","btc_value":"0.00","cash":"20.00","btc_price":"64194.79","target":"0.00","index":"1.000000","put_in":"20.00"},{"date":"2026-11-19","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"63607.96","target":"0.00","index":"1.000000","put_in":"24.11"},{"date":"2026-11-20","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"61864.01","target":"0.00","index":"1.000000","put_in":"24.11"},{"date":"2026-11-22","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"59363.82","target":"0.00","index":"1.000000","put_in":"24.11"}],"trades":[],"backtest":[{"period":"BTC 2018-2026 (Binance)","strategy":"BT6(0)-NB","strategy_total":"16.22","strategy_worst_drop":"-0.30","hold_total":"9.91","hold_worst_drop":"-0.77"},{"period":"BTC 2013-2017 (Bitstamp)","strategy":"BT6(0)-NB","strategy_total":"13.03","strategy_worst_drop":"-0.29","hold_total":"41.67","hold_worst_drop":"-0.85"},{"period":"ETH 2018-2026 (Binance)","strategy":"ET6(0)-NB","strategy_total":"10.62","strategy_worst_drop":"-0.35","hold_total":"4.35","hold_worst_drop":"-0.90"},{"period":"SOL 2021-2026 (Binance)","strategy":"SO6(0)-NB","strategy_total":"8.43","strategy_worst_drop":"-0.31","hold_total":"3.48","hold_worst_drop":"-0.97"}],"updated":"22 Nov 2026, 04:46 UTC"}</script>
+<script id="data" type="application/json">{"record":[{"date":"2026-11-18","value":"20.00","btc_value":"0.00","cash":"20.00","btc_price":"64194.79","target":"0.00","index":"1.000000","put_in":"20.00"},{"date":"2026-11-19","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"63607.96","target":"0.00","index":"1.000000","put_in":"24.11"},{"date":"2026-11-20","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"61864.01","target":"0.00","index":"1.000000","put_in":"24.11"},{"date":"2026-11-22","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"59117.90","target":"0.00","index":"1.000000","put_in":"24.11"}],"trades":[],"backtest":[{"period":"BTC 2018-2026 (Binance)","strategy":"BT6(0)-NB","strategy_total":"16.22","strategy_worst_drop":"-0.30","hold_total":"9.91","hold_worst_drop":"-0.77"},{"period":"BTC 2013-2017 (Bitstamp)","strategy":"BT6(0)-NB","strategy_total":"13.03","strategy_worst_drop":"-0.29","hold_total":"41.67","hold_worst_drop":"-0.85"},{"period":"ETH 2018-2026 (Binance)","strategy":"ET6(0)-NB","strategy_total":"10.62","strategy_worst_drop":"-0.35","hold_total":"4.35","hold_worst_drop":"-0.90"},{"period":"SOL 2021-2026 (Binance)","strategy":"SO6(0)-NB","strategy_total":"8.43","strategy_worst_drop":"-0.31","hold_total":"3.48","hold_worst_drop":"-0.97"}],"updated":"22 Nov 2026, 06:54 UTC"}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
 (function () {
@@ -267,7 +267,9 @@
       svg.append('line').attr('x1', 0).attr('x2', w - mr).attr('y1', y(v)).attr('y2', y(v)).attr('stroke', css('--line')).attr('stroke-dasharray', v === 0 ? null : '2 4');
       svg.append('text').attr('x', w - mr + 8).attr('y', y(v)).attr('dy', '0.32em').text(fmt(v)); });
     const nt = Math.max(2, Math.min(6, Math.floor(w / 110)));
-    x.ticks(nt).forEach((d) => svg.append('text').attr('x', x(d)).attr('y', h - 6).attr('text-anchor', 'middle').text(d3.utcFormat('%-d %b')(d)));
+    const seen = new Set();
+    x.ticks(nt).filter((d) => +d3.utcDay.floor(d) === +d).forEach((d) => { const lab = d3.utcFormat('%-d %b')(d); if (seen.has(lab)) return; seen.add(lab);
+      svg.append('text').attr('x', x(d)).attr('y', h - 6).attr('text-anchor', 'middle').text(lab); });
     const line = (k) => d3.line().curve(d3.curveMonotoneX).x((s) => x(s.d)).y((s) => y(s[k]));
     svg.append('path').datum(series).attr('fill', `url(#${id})`).attr('d', d3.area().curve(d3.curveMonotoneX).x((s) => x(s.d)).y0(h - m.b).y1((s) => y(s.value)));
     svg.append('path').datum(series).attr('fill', 'none').attr('stroke', css('--muted')).attr('stroke-width', 1.4).attr('stroke-dasharray', '4 4').attr('d', line('hold'));
@@ -298,5 +300,5 @@
 })();
 </script>
 
-<div style="max-width:960px;margin:24px auto 40px;padding:0 16px;font:13px/1.5 Inter,Segoe UI,Arial,sans-serif;color:#5b6875"><a href="report.pdf" style="color:#1f5f7f">Download the full proof report (PDF)</a> &middot; Published automatically from the bot's own records on 22 Nov 2026, 04:46 UTC.</div>
+<div style="max-width:960px;margin:24px auto 40px;padding:0 16px;font:13px/1.5 Inter,Segoe UI,Arial,sans-serif;color:#5b6875"><a href="report.pdf" style="color:#1f5f7f">Download the full proof report (PDF)</a> &middot; Published automatically from the bot's own records on 22 Nov 2026, 06:54 UTC.</div>
 </html>
