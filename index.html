@@ -66,8 +66,13 @@
   .row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
   .row:first-child { border-top: 0; }
   .ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 16px; color: #fff; }
-  .ico.btc { background: var(--gold); } .ico.usdt { background: var(--teal); } .ico.buy { background: var(--accent-soft); color: var(--accent); }
-  .ico.sell { background: var(--sunk); color: var(--fg); }
+  .ico svg { width: 40px; height: 40px; display: block; }
+  .ico { position: relative; background: none; }
+  .ico .dir { position: absolute; right: -3px; bottom: -3px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center;
+              font-size: 11px; font-weight: 700; background: var(--panel); color: var(--fg); box-shadow: 0 0 0 2px var(--panel); }
+  .ico .dir.buy { color: var(--up); } .ico .dir.sell { color: var(--down); }
+  .akey { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); margin: 2px 0 6px; }
+  .akey span { display: inline-flex; align-items: center; gap: 6px; } .akey i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
   .r1 { font-weight: 600; } .r2 { font-size: 13px; color: var(--muted); }
   .rv { text-align: right; } .rv .r1 { font-variant-numeric: tabular-nums; }
   .alloc { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--sunk); margin: 4px 0 6px; }
@@ -96,7 +101,7 @@
 </style>
 
 <header class="top"><div class="top-in">
-  <div class="badges"><span class="badge live">Live</span><span class="badge">Binance spot</span><span class="badge">BTC / USDT</span><span class="badge">No leverage</span></div>
+  <div class="badges"><span class="badge live">Live</span><span class="badge">Binance spot</span><span class="badge">BTC · ETH · SOL</span><span class="badge">No leverage</span></div>
 </div></header>
 
 <div class="wrap">
@@ -123,6 +128,7 @@
     <section class="card" aria-label="Assets">
       <div class="card-h"><h2>Assets</h2><span class="muted" id="f-share" style="font-size:13px">—</span></div>
       <div class="alloc" id="alloc" aria-hidden="true"></div>
+      <div class="akey" id="akey"></div>
       <div class="rows" id="assets"></div>
     </section>
 
@@ -158,8 +164,8 @@
     <section class="card" aria-label="About the strategy">
       <div class="card-h"><h2>About the strategy</h2></div>
       <div class="facts">
-        <div><span>✓</span><p style="margin:0">The strategy's rules are private. It decides once a day and trades Bitcoin against USDT on Binance spot.</p></div>
-        <div><span>✓</span><p style="margin:0">No borrowing: at most 100% of the account is in Bitcoin. No margin, no leverage.</p></div>
+        <div><span>✓</span><p style="margin:0">The strategy's rules are private. It decides once a day and trades Bitcoin, Ethereum and Solana against USDT on Binance spot.</p></div>
+        <div><span>✓</span><p style="margin:0">No borrowing: at most 100% of the account is invested. No margin, no leverage.</p></div>
         <div><span>✓</span><p style="margin:0">Trade-only access: the bot's Binance key can place trades but cannot withdraw funds.</p></div>
         <div><span>✓</span><p style="margin:0">Rules fixed in advance: fingerprinted before testing and not changed since.</p></div>
       </div>
@@ -172,7 +178,7 @@
   </footer>
 </div>
 
-<script id="data" type="application/json">{"record":[{"date":"2026-11-18","value":"20.00","btc_value":"0.00","cash":"20.00","btc_price":"64194.79","target":"0.00","index":"1.000000","put_in":"20.00"},{"date":"2026-11-19","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"63607.96","target":"0.00","index":"1.000000","put_in":"24.11"},{"date":"2026-11-20","value":"24.11","btc_value":"0.00","cash":"24.11","btc_price":"61864.01","target":"0.00","index":"1.000000","put_in":"24.11"},{"date":"2026-11-22","value":"930.06","btc_value":"0.00","cash":"930.06","btc_price":"60839.99","target":"0.00","index":"1.000000","put_in":"930.06"}],"trades":[],"backtest":[{"period":"BTC 2018-2026 (Binance)","strategy":"BT6(0)-NB","strategy_total":"16.22","strategy_worst_drop":"-0.30","hold_total":"9.91","hold_worst_drop":"-0.77"},{"period":"BTC 2013-2017 (Bitstamp)","strategy":"BT6(0)-NB","strategy_total":"13.03","strategy_worst_drop":"-0.29","hold_total":"41.67","hold_worst_drop":"-0.85"},{"period":"ETH 2018-2026 (Binance)","strategy":"ET6(0)-NB","strategy_total":"10.62","strategy_worst_drop":"-0.35","hold_total":"4.35","hold_worst_drop":"-0.90"},{"period":"SOL 2021-2026 (Binance)","strategy":"SO6(0)-NB","strategy_total":"8.43","strategy_worst_drop":"-0.31","hold_total":"3.48","hold_worst_drop":"-0.97"}],"updated":"22 Nov 2026, 15:20 UTC"}</script>
+<script id="data" type="application/json">{"record":[{"date":"2026-11-18","value":"23.97","btc_value":"0.00","eth_value":"0.00","sol_value":"0.00","cash":"23.97","btc_price":"64194.79","eth_price":"0.00","sol_price":"0.00","target":"","index":"1.000000","put_in":"23.97"},{"date":"2026-11-19","value":"24.11","btc_value":"0.00","eth_value":"0.00","sol_value":"0.00","cash":"24.11","btc_price":"63607.96","eth_price":"0.00","sol_price":"0.00","target":"","index":"1.000000","put_in":"24.11"},{"date":"2026-11-20","value":"24.11","btc_value":"0.00","eth_value":"0.00","sol_value":"0.00","cash":"24.11","btc_price":"61864.00","eth_price":"0.00","sol_price":"0.00","target":"","index":"1.000000","put_in":"24.11"},{"date":"2026-11-22","value":"930.06","btc_value":"0.00","eth_value":"0.00","sol_value":"0.00","cash":"930.06","btc_price":"60840.00","eth_price":"0.00","sol_price":"0.00","target":"","index":"1.000000","put_in":"930.06"}],"trades":[],"backtest":[{"period":"BTC 2018-2026 (Binance)","strategy":"BT6(0)-NB","strategy_total":"16.22","strategy_worst_drop":"-0.30","hold_total":"9.91","hold_worst_drop":"-0.77"},{"period":"BTC 2013-2017 (Bitstamp)","strategy":"BT6(0)-NB","strategy_total":"13.03","strategy_worst_drop":"-0.29","hold_total":"41.67","hold_worst_drop":"-0.85"},{"period":"ETH 2018-2026 (Binance)","strategy":"ET6(0)-NB","strategy_total":"10.62","strategy_worst_drop":"-0.35","hold_total":"4.35","hold_worst_drop":"-0.90"},{"period":"SOL 2021-2026 (Binance)","strategy":"SO6(0)-NB","strategy_total":"8.43","strategy_worst_drop":"-0.31","hold_total":"3.48","hold_worst_drop":"-0.97"}],"updated":"22 Nov 2026, 15:59 UTC"}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
 (function () {
@@ -184,6 +190,13 @@
   const sgn = (v) => (isFinite(v) ? (v > 0.004 ? '+' : v < -0.004 ? '−' : '') + usd(Math.abs(v)) : '—');
   const day = (s) => new Date(s + 'T00:00:00Z');
   const fmtDay = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  // Real coin logos (Simple Icons, CC0), drawn in each coin's own colour; the same colours are used everywhere on the page.
+  const COIN = {
+    BTC: { name: 'Bitcoin', color: '#F7931A', svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F7931A" d="M23.638 14.904c-1.602 6.43-8.113 10.34-14.542 8.736C2.67 22.05-1.244 15.525.362 9.105 1.962 2.67 8.475-1.243 14.9.358c6.43 1.605 10.342 8.115 8.738 14.548v-.002zm-6.35-4.613c.24-1.59-.974-2.45-2.64-3.03l.54-2.153-1.315-.33-.525 2.107c-.345-.087-.705-.167-1.064-.25l.526-2.127-1.32-.33-.54 2.165c-.285-.067-.565-.132-.84-.2l-1.815-.45-.35 1.407s.975.225.955.236c.535.136.63.486.615.766l-1.477 5.92c-.075.166-.24.406-.614.314.015.02-.96-.24-.96-.24l-.66 1.51 1.71.426.93.242-.54 2.19 1.32.327.54-2.17c.36.1.705.19 1.05.273l-.51 2.154 1.32.33.545-2.19c2.24.427 3.93.257 4.64-1.774.57-1.637-.03-2.58-1.217-3.196.854-.193 1.5-.76 1.68-1.93h.01zm-3.01 4.22c-.404 1.64-3.157.75-4.05.53l.72-2.9c.896.23 3.757.67 3.33 2.37zm.41-4.24c-.37 1.49-2.662.735-3.405.55l.654-2.64c.744.18 3.137.524 2.75 2.084v.006z"/></svg>' },
+    ETH: { name: 'Ethereum', color: '#627EEA', svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#627EEA"/><g transform="translate(4.8 4.8) scale(.6)"><path fill="#fff" d="M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z"/></g></svg>' },
+    SOL: { name: 'Solana', color: '#9945FF', svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="solg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#9945FF"/><stop offset="1" stop-color="#14F195"/></linearGradient></defs><circle cx="12" cy="12" r="12" fill="#0b0b0f"/><g transform="translate(5.4 5.4) scale(.55)"><path fill="url(#solg)" d="m23.8764 18.0313-3.962 4.1393a.9201.9201 0 0 1-.306.2106.9407.9407 0 0 1-.367.0742H.4599a.4689.4689 0 0 1-.2522-.0733.4513.4513 0 0 1-.1696-.1962.4375.4375 0 0 1-.0314-.2545.4438.4438 0 0 1 .117-.2298l3.9649-4.1393a.92.92 0 0 1 .3052-.2102.9407.9407 0 0 1 .3658-.0746H23.54a.4692.4692 0 0 1 .2523.0734.4531.4531 0 0 1 .1697.196.438.438 0 0 1 .0313.2547.4442.4442 0 0 1-.1169.2297zm-3.962-8.3355a.9202.9202 0 0 0-.306-.2106.941.941 0 0 0-.367-.0742H.4599a.4687.4687 0 0 0-.2522.0734.4513.4513 0 0 0-.1696.1961.4376.4376 0 0 0-.0314.2546.444.444 0 0 0 .117.2297l3.9649 4.1394a.9204.9204 0 0 0 .3052.2102c.1154.049.24.0744.3658.0746H23.54a.469.469 0 0 0 .2523-.0734.453.453 0 0 0 .1697-.1961.4382.4382 0 0 0 .0313-.2546.4444.4444 0 0 0-.1169-.2297zM.46 6.7225h18.7815a.9411.9411 0 0 0 .367-.0742.9202.9202 0 0 0 .306-.2106l3.962-4.1394a.4442.4442 0 0 0 .117-.2297.4378.4378 0 0 0-.0314-.2546.453.453 0 0 0-.1697-.196.469.469 0 0 0-.2523-.0734H4.7596a.941.941 0 0 0-.3658.0745.9203.9203 0 0 0-.3052.2102L.1246 5.9687a.4438.4438 0 0 0-.1169.2295.4375.4375 0 0 0 .0312.2544.4512.4512 0 0 0 .1692.196.4689.4689 0 0 0 .2518.0739z"/></g></svg>' },
+    USDT: { name: 'Tether (USDT)', color: '#26A17B', svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#26A17B"/><g transform="translate(3.6 3.6) scale(.7)"><path fill="#fff" d="M18.7538 10.5176c0 .6251-2.2379 1.1483-5.2381 1.2812l.0028.0007c-.0848.0064-.5233.0325-1.5012.0325-.7778 0-1.33-.0233-1.5237-.0325-3.0059-.1322-5.2495-.6555-5.2495-1.2819s2.2436-1.149 5.2495-1.2834v2.0442c.1965.0142.7594.0474 1.5372.0474.9334 0 1.4008-.0389 1.4849-.0466V9.2356c2.9994.1337 5.2381.657 5.2381 1.282zm5.19.5466L12.1248 22.389a.1803.1803 0 0 1-.2496 0L.0562 11.0635a.1781.1781 0 0 1-.0382-.2079l4.3762-9.1921a.1767.1767 0 0 1 .1626-.1026h14.8878a.1768.1768 0 0 1 .1612.1032l4.3762 9.1922a.1782.1782 0 0 1-.0382.2079zm-4.478-.4038c0-.8068-2.5515-1.4799-5.9473-1.6369V7.195h4.186V4.4055H6.3076V7.195h4.1852v1.8286c-3.4018.1562-5.9601.83-5.9601 1.6376 0 .8075 2.5583 1.4806 5.9601 1.6376v5.8618h3.025v-5.8639c3.394-.1563 5.948-.8295 5.948-1.6363z"/></g></svg>' },
+  };
   const tone = (el, v) => { el.classList.remove('up', 'down'); if (v > 0.00005) el.classList.add('up'); else if (v < -0.00005) el.classList.add('down'); };
 
   const rec = D.record.filter((r) => isFinite(n(r.value)) && isFinite(n(r.btc_price)));
@@ -207,19 +220,26 @@
   $('s-ret').textContent = pct(ret); tone($('s-ret'), ret);
   $('s-btc').textContent = pct(btc); $('s-dd').textContent = dd < -0.00005 ? pct(dd) : '0.00%';
   $('s-put').textContent = usd(putIn); $('s-days').textContent = String(days);
-  $('s-pos').textContent = inBtc ? Math.round(share * 100) + '% Bitcoin' : 'In cash';
-  $('f-share').textContent = inBtc ? Math.round(share * 100) + '% in Bitcoin' : '100% in cash';
 
-  // assets
-  const btcVal = n(z.btc_value), cash = Math.max(value - btcVal, 0), btcUnits = btcVal / n(z.btc_price);
-  const alloc = $('alloc'); [[btcVal, 'var(--gold)'], [cash, 'var(--teal)']].forEach(([v, c]) => { if (v > 0) { const i = document.createElement('i'); i.style.width = (v / value * 100) + '%'; i.style.background = c; alloc.append(i); } });
-  const assetRow = (cls, sym, name, sub, val, pc) => {
+  // assets: every coin the bot trades, then cash; the bar, the key and the logos share each coin's colour
+  const held = ['BTC', 'ETH', 'SOL'].map((c) => ({ c, v: n(z[c.toLowerCase() + '_value']) || 0, px: n(z[c.toLowerCase() + '_price']) }))
+;
+  const cash = Math.max(value - held.reduce((t, x) => t + x.v, 0), 0);
+  const alloc = $('alloc'), akey = $('akey');
+  [...held.map((x) => [x.c, x.v]), ['USDT', cash]].forEach(([c, v]) => {
+    if (v > 0) { const i = document.createElement('i'); i.style.width = (v / value * 100) + '%'; i.style.background = COIN[c].color; alloc.append(i); }
+    const k = document.createElement('span'); k.innerHTML = '<i></i>'; k.querySelector('i').style.background = COIN[c].color;
+    k.append(c + ' ' + (value > 0 ? Math.round(v / value * 100) : 0) + '%'); akey.append(k); });
+  const assetRow = (c, sub, val, pc) => {
     const row = document.createElement('div'); row.className = 'row';
-    row.innerHTML = '<div class="ico ' + cls + '" aria-hidden="true"></div><div><div class="r1"></div><div class="r2"></div></div><div class="rv"><div class="r1"></div><div class="r2"></div></div>';
-    row.querySelector('.ico').textContent = sym; const t = row.querySelectorAll('.r1, .r2');
-    t[0].textContent = name; t[1].textContent = sub; t[2].textContent = val; t[3].textContent = pc; $('assets').append(row); };
-  assetRow('btc', '₿', 'Bitcoin', (isFinite(btcUnits) && btcUnits > 0 ? btcUnits.toFixed(6) : '0') + ' BTC · ' + usd(n(z.btc_price)), usd(btcVal), Math.round(btcVal / value * 100) + '%');
-  assetRow('usdt', '₮', 'Tether (USDT)', 'Cash', usd(cash), Math.round(cash / value * 100) + '%');
+    row.innerHTML = '<div class="ico">' + COIN[c].svg + '</div><div><div class="r1"></div><div class="r2"></div></div><div class="rv"><div class="r1"></div><div class="r2"></div></div>';
+    const t = row.querySelectorAll('.r1, .r2'); t[0].textContent = COIN[c].name; t[1].textContent = sub; t[2].textContent = val; t[3].textContent = pc; $('assets').append(row); };
+  held.forEach((x) => assetRow(x.c, (x.px > 0 ? (x.v > 0 ? (x.v / x.px).toFixed(6) : '0') + ' ' + x.c + ' · ' + usd(x.px) : 'Joins at the next daily run'), usd(x.v),
+                                (value > 0 ? Math.round(x.v / value * 100) : 0) + '%'));
+  assetRow('USDT', 'Cash', usd(cash), (value > 0 ? Math.round(cash / value * 100) : 0) + '%');
+  const invested = 1 - cash / (value || 1);
+  $('s-pos').textContent = invested > 0.005 ? Math.round(invested * 100) + '% invested' : 'In cash';
+  $('f-share').textContent = invested > 0.005 ? Math.round(invested * 100) + '% invested' : '100% in cash';
 
   // activity
   const trades = [...D.trades].reverse();
@@ -227,9 +247,9 @@
   $('no-trades').hidden = trades.length > 0;
   trades.forEach((r) => {
     const buy = r.side === 'buy', row = document.createElement('div'); row.className = 'row';
-    row.innerHTML = '<div class="ico" aria-hidden="true"></div><div><div class="r1"></div><div class="r2"></div></div><div class="rv"><div class="r1"></div><div class="r2"></div></div>';
-    const ic = row.querySelector('.ico'); ic.classList.add(buy ? 'buy' : 'sell'); ic.textContent = buy ? '↓' : '↑';
-    const t = row.querySelectorAll('.r1, .r2'), coin = r.coin === 'BTC' ? 'Bitcoin' : r.coin;
+    const cc = COIN[r.coin] ? r.coin : 'BTC';
+    row.innerHTML = '<div class="ico">' + COIN[cc].svg + '<span class="dir ' + (buy ? 'buy' : 'sell') + '">' + (buy ? '↓' : '↑') + '</span></div><div><div class="r1"></div><div class="r2"></div></div><div class="rv"><div class="r1"></div><div class="r2"></div></div>';
+    const t = row.querySelectorAll('.r1, .r2'), coin = COIN[cc].name;
     t[0].textContent = (buy ? 'Bought ' : 'Sold ') + coin; t[1].textContent = fmtDay(day(r.date)) + ' · at ' + usd(n(r.price));
     t[2].textContent = (buy ? '+' : '−') + n(r.amount) + ' ' + r.coin; t[3].textContent = usd(n(r.usd)); $('t-trades').append(row); });
 
@@ -300,5 +320,5 @@
 })();
 </script>
 
-<div style="max-width:960px;margin:24px auto 40px;padding:0 16px;font:13px/1.5 Inter,Segoe UI,Arial,sans-serif;color:#5b6875"><a href="report.pdf" style="color:#1f5f7f">Download the full proof report (PDF)</a> &middot; Published automatically from the bot's own records on 22 Nov 2026, 15:20 UTC.</div>
+<div style="max-width:960px;margin:24px auto 40px;padding:0 16px;font:13px/1.5 Inter,Segoe UI,Arial,sans-serif;color:#5b6875"><a href="report.pdf" style="color:#1f5f7f">Download the full proof report (PDF)</a> &middot; Published automatically from the bot's own records on 22 Nov 2026, 15:59 UTC.</div>
 </html>
